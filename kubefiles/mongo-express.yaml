@@ -3,46 +3,54 @@ kind: Deployment
 metadata:
   creationTimestamp: null
   labels:
-    app: mongodb
-  name: mongodb-deployment
+    app: mongo-express
+  name: mongo-express
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: mongodb
+      app: mongo-express
   template:
     metadata:
       creationTimestamp: null
       labels:
-        app: mongodb
+        app: mongo-express
     spec:
       containers:
-      - image: mongo
-        name: mongodb
+      - image: mongo-express
+        name: mongo-express
         ports:
-        - containerPort: 27017
+        - containerPort: 8081
         env:
         - name: MONGO_INITDB_ROOT_USERNAME
           valueFrom:
             secretKeyRef:
               name: mongodb-secret
               key: mongo-root-username
-        - name: MONGO_INITDB_ROOT_PASSWORD
+        - name: ME_CONFIG_MONGODB_ADMINPASSWORD
           valueFrom:
             secretKeyRef:
               name: mongodb-secret
               key: mongo-root-password
+        - name: ME_CONFIG_MONGODB_SERVER
+          valueFrom:
+            configMapKeyRef:
+
+              name: mongodb-configmap
+              key: Dadatabase_url
 
 ---
 
 apiVersion: v1
 kind: Service
 metadata:
-  name: mongodb-service
+  name: mongodb-express-service
 spec:
   selector:
-    app: mongodb
+    app: mongo-express
+  type: LoadBalancer
   ports:
     - protocol: TCP
-      port: 27017
-      targetPort: 27017
+      port: 8081
+      targetPort: 8081
+      nodePort: 30000
