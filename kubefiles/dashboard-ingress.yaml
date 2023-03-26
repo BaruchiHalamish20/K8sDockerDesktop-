@@ -24,3 +24,17 @@ spec:
                 number: 443
           path: /
           pathType: ImplementationSpecific
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: default-http-backend
+spec:
+  selector:
+    app: default-reponse-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
